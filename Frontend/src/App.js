@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 import icon from './icon.png';
@@ -16,17 +16,38 @@ function App() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeChat, setActiveChat] = useState(0);
+  const [isTyping, setIsTyping] = useState(false);
+  const abortControllerRef = useRef(null);
+  const messagesEndRef = useRef(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
+
     const userMessage = { text: input, sender: 'user' };
     setMessages(prev => [...prev, userMessage]);
+    const messageToSend = input;
     setInput('');
+
+    // Reset textarea height when input is cleared
+    const textarea = document.querySelector('.pharma-chat-input-inner');
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = '40px';
+    }
+
     setLoading(true);
+
     try {
       const response = await axios.post('http://localhost:3001/api/chat', {
-        message: input
+        message: messageToSend,
+        sessionId: 'default'
       });
+
       const botMessage = { text: response.data.message, sender: 'bot' };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
@@ -39,8 +60,22 @@ function App() {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       sendMessage();
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+    
+    // Auto-resize textarea
+    e.target.style.height = 'auto';
+    if (e.target.value.trim() === '') {
+      // Reset to minimum height when empty
+      e.target.style.height = '40px';
+    } else {
+      e.target.style.height = Math.min(e.target.scrollHeight, 150) + 'px';
     }
   };
 
@@ -96,16 +131,17 @@ function App() {
                 </div>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
           <div className="pharma-chat-input-bar">
-            <input
-              type="text"
+            <textarea
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={handleInputChange}
               onKeyPress={handleKeyPress}
-              placeholder="Ask your pharmacy assistant..."
+              placeholder="Ask your pharmacy assistant... (Press Enter to send, Shift+Enter for new line)"
               disabled={loading}
               className="pharma-chat-input-inner"
+              rows={1}
             />
             <button
               className="pharma-send-btn"

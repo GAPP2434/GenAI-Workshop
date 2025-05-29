@@ -50,12 +50,20 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   background: #f6fafd;
+  width: 100%;
+  height: 0;
+  scroll-behavior: smooth;
+  overflow-anchor: none;
+  contain: layout;
 }
 
 .pharma-message {
   display: flex;
+  flex-shrink: 0;
+  width: 100%;
+  margin-bottom: 8px;
 }
 
 .pharma-message.user {
@@ -71,8 +79,16 @@
   padding: 12px 18px;
   border-radius: 18px 18px 4px 18px;
   font-size: 1.05rem;
+  word-wrap: break-word;
   word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
   box-shadow: 0 2px 8px rgba(33, 118, 174, 0.04);
+  white-space: pre-wrap;
+  line-height: 1.5;
+  min-height: 20px;
+  width: fit-content;
+  display: block;
 }
 
 .pharma-message.user .pharma-message-bubble {
@@ -92,6 +108,17 @@
   opacity: 0.7;
 }
 
+.typing-cursor {
+  animation: blink 1s infinite;
+  font-weight: bold;
+  color: #2176ae;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
 .pharma-chat-input {
   display: none;
 }
@@ -106,6 +133,7 @@
   box-shadow: 0 2px 8px rgba(33, 118, 174, 0.06);
   border: 1.5px solid #b3d8f8;
   position: relative;
+  flex-shrink: 0;
 }
 
 .pharma-chat-input-inner {
@@ -116,6 +144,12 @@
   font-size: 1.08rem;
   color: #2176ae;
   padding: 0.6rem 0.8rem 0.6rem 0;
+  resize: none;
+  min-height: 40px;
+  max-height: 150px;
+  overflow-y: auto;
+  line-height: 1.4;
+  font-family: inherit;
 }
 
 .pharma-chat-input-inner:disabled {
@@ -161,11 +195,12 @@
 
 /* Full app layout */
 .pharma-full-app {
-  min-height: 100vh;
+  height: 100vh;
   width: 100vw;
   background: linear-gradient(135deg, #e3f0ff 0%, #b3d8f8 100%);
   display: flex;
   font-family: 'Inter', Arial, sans-serif;
+  overflow: hidden;
 }
 
 /* Sidebar */
@@ -176,8 +211,9 @@
   flex-direction: column;
   border-right: 1.5px solid #d0e6fa;
   padding: 0;
-  min-height: 100vh;
+  height: 100vh;
   box-shadow: 2px 0 12px rgba(33, 118, 174, 0.04);
+  overflow: hidden;
 }
 .pharma-sidebar-header {
   display: flex;
@@ -266,16 +302,16 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   background: none;
   padding: 0;
+  overflow: hidden;
 }
 
 .pharma-chat-container {
   flex: 1;
-  width: 100vw;
-  min-width: 0;
-  min-height: 100vh;
+  width: 100%;
+  height: 100vh;
   background: #fff;
   border-radius: 0;
   box-shadow: none;
@@ -290,8 +326,9 @@
   align-items: center;
   gap: 12px;
   background: #e3f0ff;
-  padding: 24px 32px 16px 32px;
+  padding: 16px 32px;
   border-bottom: 1px solid #d0e6fa;
+  flex-shrink: 0;
 }
 
 .pharma-logo {
@@ -316,13 +353,20 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   background: #f6fafd;
   width: 100%;
+  height: 0;
+  scroll-behavior: smooth;
+  overflow-anchor: none;
+  contain: layout;
 }
 
 .pharma-message {
   display: flex;
+  flex-shrink: 0;
+  width: 100%;
+  margin-bottom: 8px;
 }
 
 .pharma-message.user {
@@ -338,8 +382,16 @@
   padding: 12px 18px;
   border-radius: 18px 18px 4px 18px;
   font-size: 1.05rem;
+  word-wrap: break-word;
   word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
   box-shadow: 0 2px 8px rgba(33, 118, 174, 0.04);
+  white-space: pre-wrap;
+  line-height: 1.5;
+  min-height: 20px;
+  width: fit-content;
+  display: block;
 }
 
 .pharma-message.user .pharma-message-bubble {
@@ -357,6 +409,17 @@
 .typing {
   font-style: italic;
   opacity: 0.7;
+}
+
+.typing-cursor {
+  animation: blink 1s infinite;
+  font-weight: bold;
+  color: #2176ae;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
 }
 
 .pharma-chat-input {
@@ -406,15 +469,17 @@
 @media (max-width: 900px) {
   .pharma-full-app {
     flex-direction: column;
+    height: 100vh;
   }
   .pharma-sidebar {
     width: 100vw;
-    min-height: unset;
+    height: auto;
     flex-direction: row;
     border-right: none;
     border-bottom: 1.5px solid #d0e6fa;
     box-shadow: none;
     padding-bottom: 0;
+    flex-shrink: 0;
   }
   .pharma-sidebar-header, .pharma-sidebar-footer {
     padding: 12px 8px;
@@ -438,10 +503,11 @@
     border-bottom: 4px solid #6ec1e4;
   }
   .pharma-main-area {
-    min-height: calc(100vh - 80px);
+    flex: 1;
+    height: calc(100vh - 80px);
   }
   .pharma-chat-container {
-    min-height: calc(100vh - 80px);
+    height: 100%;
     width: 100vw;
   }
 }
@@ -452,13 +518,15 @@
   }
   .pharma-chat-container {
     max-width: 100vw;
-    min-height: 100vh;
+    height: 100%;
     border-radius: 0;
     margin: 0;
     width: 100vw;
   }
-  .pharma-header, .pharma-chat-input {
+  .pharma-header, .pharma-chat-input-bar {
     padding-left: 8px;
     padding-right: 8px;
+    margin-left: 8px;
+    margin-right: 8px;
   }
 }

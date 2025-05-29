@@ -55,6 +55,42 @@ class OpenAIService {
     }
   }
 
+  async getChatResponseStream(userMessage, sessionId = 'default') {
+    try {
+      let threadId = this.threads.get(sessionId);
+      
+      if (!threadId) {
+        const thread = await openai.beta.threads.create();
+        threadId = thread.id;
+        this.threads.set(sessionId, threadId);
+      }
+
+      await openai.beta.threads.messages.create(threadId, {
+        role: "user",
+        content: userMessage
+      });
+
+      const run = await openai.beta.threads.runs.create(threadId, {
+        assistant_id: this.assistantId
+      });
+
+      return { threadId, runId: run.id };
+    } catch (error) {
+      console.error('OpenAI Assistant API Error:', error);
+      throw new Error('Failed to start assistant run');
+    }
+  }
+
+  async getRunStatus(threadId, runId) {
+    return await openai.beta.threads.runs.retrieve(threadId, runId);
+  }
+
+  async getLatestMessage(threadId) {
+    const messages = await openai.beta.threads.messages.list(threadId);
+    const assistantMessage = messages.data.find(msg => msg.role === 'assistant');
+    return assistantMessage ? assistantMessage.content[0].text.value : null;
+  }
+
   // Optional: Clear session thread
   clearSession(sessionId = 'default') {
     this.threads.delete(sessionId);
